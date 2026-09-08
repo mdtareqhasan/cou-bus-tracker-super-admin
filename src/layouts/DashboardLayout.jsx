@@ -18,15 +18,13 @@ export default function DashboardLayout() {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
       <Sidebar />
-      <Box sx={{ flexGrow: 1, ml: `${DRAWER_WIDTH}px` }}>
+      <Box sx={{ flexGrow: 1, ml: `${DRAWER_WIDTH}px`, minWidth: 0 }}>
         <TopBar title={title} />
         <Toolbar sx={{ minHeight: { xs: 64, sm: 68 } }} />
         <Box
           sx={{
-            px: { xs: 2, md: 3 },
+            px: { xs: 2.5, md: 3.5 },
             py: { xs: 2, md: 2.5 },
-            maxWidth: 1200,
-            mx: 'auto',
           }}
         >
           <Outlet />
