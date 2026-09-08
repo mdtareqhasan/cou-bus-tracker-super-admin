@@ -19,7 +19,7 @@ import {
 } from '@mui/icons-material';
 import { NavLink, useLocation } from 'react-router-dom';
 
-const DRAWER_WIDTH = 260;
+const DRAWER_WIDTH = 230;
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: <DashboardIcon fontSize="small" />, path: '/dashboard' },
@@ -47,7 +47,7 @@ export default function Sidebar() {
         },
       }}
     >
-      <Box sx={{ px: 3, pt: 3, pb: 2.5 }}>
+      <Box sx={{ px: 2, pt: 3, pb: 2.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box
             sx={{
@@ -82,7 +82,7 @@ export default function Sidebar() {
         <Divider sx={{ borderColor: 'rgba(0,0,0,0.04)' }} />
       </Box>
 
-      <List sx={{ px: 2, py: 2, flex: 1 }}>
+      <List sx={{ px: 1.5, py: 2, flex: 1 }}>
         {NAV_ITEMS.map((item) => {
           const active = location.pathname === item.path;
           return (
@@ -130,7 +130,7 @@ export default function Sidebar() {
         })}
       </List>
 
-      <Box sx={{ px: 2, pb: 2 }}>
+      <Box sx={{ px: 1.5, pb: 2 }}>
         <Divider sx={{ borderColor: 'rgba(0,0,0,0.04)', mb: 2 }} />
         <Box
           sx={{

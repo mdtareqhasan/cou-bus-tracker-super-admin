@@ -23,8 +23,10 @@ export default function DashboardLayout() {
         <Toolbar sx={{ minHeight: { xs: 64, sm: 68 } }} />
         <Box
           sx={{
-            p: { xs: 2.5, md: 3.5 },
-            maxWidth: 1400,
+            px: { xs: 2, md: 3 },
+            py: { xs: 2, md: 2.5 },
+            maxWidth: 1200,
+            mx: 'auto',
           }}
         >
           <Outlet />

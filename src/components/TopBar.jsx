@@ -49,7 +49,7 @@ export default function TopBar({ title }) {
         color: 'text.primary',
       }}
     >
-      <Toolbar sx={{ pl: { sm: 3 }, pr: { sm: 3 }, minHeight: { xs: 64, sm: 68 } }}>
+      <Toolbar sx={{ pl: { sm: 2.5 }, pr: 2.5, minHeight: { xs: 64, sm: 68 } }}>
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F172A' }}>
             {title}
