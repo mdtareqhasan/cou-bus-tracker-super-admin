@@ -16,12 +16,17 @@ export default function DashboardLayout() {
   const title = TITLES[location.pathname] || 'Super Admin';
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
       <Sidebar />
       <Box sx={{ flexGrow: 1, ml: `${DRAWER_WIDTH}px` }}>
         <TopBar title={title} />
-        <Toolbar />
-        <Box sx={{ p: { xs: 2, md: 4 } }}>
+        <Toolbar sx={{ minHeight: { xs: 64, sm: 68 } }} />
+        <Box
+          sx={{
+            p: { xs: 2.5, md: 3.5 },
+            maxWidth: 1400,
+          }}
+        >
           <Outlet />
         </Box>
       </Box>

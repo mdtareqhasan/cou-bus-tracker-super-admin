@@ -76,21 +76,40 @@ export default function AppVersion() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-        App Version Management
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Control Flutter app update behavior. Bump versions here to push updates to users.
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #06B6D4, #0EA5E9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+          }}
+        >
+          <SystemUpdateIcon fontSize="small" />
+        </Box>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            App Version Management
+          </Typography>
+        </Box>
+      </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, ml: 6.5 }}>
+        Control Flutter app update behavior
       </Typography>
 
       <Card>
-        <CardContent>
+        <CardContent sx={{ p: 3 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={3}>
+            <Stack spacing={2.5}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField
                   label="Latest Version"
                   fullWidth
+                  size="small"
                   {...register('latestAppVersion')}
                   error={!!errors.latestAppVersion}
                   helperText={errors.latestAppVersion?.message || 'Current published version (e.g., 1.2.0)'}
@@ -98,26 +117,40 @@ export default function AppVersion() {
                 <TextField
                   label="Minimum Version"
                   fullWidth
+                  size="small"
                   {...register('minimumAppVersion')}
                   error={!!errors.minimumAppVersion}
                   helperText={errors.minimumAppVersion?.message || 'Versions below this are blocked'}
                 />
               </Stack>
 
-              <Box sx={{ p: 2, borderRadius: 2, backgroundColor: 'background.default' }}>
+              <Box
+                sx={{
+                  p: 2.5,
+                  borderRadius: '12px',
+                  backgroundColor: forceUpdate ? 'rgba(239, 68, 68, 0.04)' : 'rgba(79, 70, 229, 0.04)',
+                  border: `1px solid ${forceUpdate ? 'rgba(239, 68, 68, 0.1)' : 'rgba(79, 70, 229, 0.08)'}`,
+                  transition: 'all 0.2s ease',
+                }}
+              >
                 <Stack direction="row" alignItems="center" spacing={1.5}>
-                  <SystemUpdateIcon color={forceUpdate ? 'error' : 'primary'} />
+                  <SystemUpdateIcon
+                    sx={{
+                      color: forceUpdate ? '#EF4444' : '#4F46E5',
+                      transition: 'color 0.2s ease',
+                    }}
+                  />
                   <Box sx={{ flexGrow: 1 }}>
                     <FormControlLabel
                       control={<Switch {...register('forceUpdate')} />}
                       label={
                         <Box>
-                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
                             Force Update
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {forceUpdate
-                              ? 'Users on outdated versions will be blocked from using the app'
+                              ? 'Users on outdated versions will be blocked'
                               : 'Users get a soft update prompt only'}
                           </Typography>
                         </Box>
@@ -128,6 +161,12 @@ export default function AppVersion() {
                     label={forceUpdate ? 'BLOCKING' : 'OPTIONAL'}
                     color={forceUpdate ? 'error' : 'success'}
                     size="small"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '0.65rem',
+                      height: 24,
+                      borderRadius: '6px',
+                    }}
                   />
                 </Stack>
               </Box>
@@ -137,24 +176,37 @@ export default function AppVersion() {
                 fullWidth
                 multiline
                 minRows={3}
+                size="small"
                 {...register('updateAvailableMessage')}
                 error={!!errors.updateAvailableMessage}
                 helperText={errors.updateAvailableMessage?.message || 'Shown to users when an update is available'}
               />
 
               {Object.keys(errors).length > 0 && (
-                <Alert severity="warning">
+                <Alert
+                  severity="warning"
+                  sx={{
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(245, 158, 11, 0.04)',
+                    border: '1px solid rgba(245, 158, 11, 0.12)',
+                  }}
+                >
                   Please fix the errors above before saving.
                 </Alert>
               )}
 
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 1 }}>
                 <Button
                   type="submit"
                   variant="contained"
                   size="large"
                   startIcon={<SaveIcon />}
                   disabled={isSubmitting || !isDirty}
+                  sx={{
+                    borderRadius: '10px',
+                    px: 4,
+                    boxShadow: '0 4px 14px rgba(79, 70, 229, 0.3)',
+                  }}
                 >
                   {isSubmitting ? 'Saving...' : 'Save Version Settings'}
                 </Button>
@@ -164,11 +216,20 @@ export default function AppVersion() {
         </CardContent>
       </Card>
 
-      <Alert severity="info" sx={{ mt: 3 }} icon={<SystemUpdateIcon />}>
-        <Typography variant="body2">
+      <Alert
+        severity="info"
+        sx={{
+          mt: 3,
+          borderRadius: '12px',
+          backgroundColor: 'rgba(59, 130, 246, 0.04)',
+          border: '1px solid rgba(59, 130, 246, 0.1)',
+          '& .MuiAlert-icon': { color: '#3B82F6' },
+        }}
+        icon={<SystemUpdateIcon />}
+      >
+        <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
           <strong>Tip:</strong> When you release a new version on the Play Store, bump <strong>Latest Version</strong>{' '}
-          and (if required) enable <strong>Force Update</strong>. Existing users will see the update prompt on next
-          launch.
+          and (if required) enable <strong>Force Update</strong>. Existing users will see the update prompt on next launch.
         </Typography>
       </Alert>
     </Box>

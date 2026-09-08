@@ -17,6 +17,7 @@ import {
   Visibility,
   VisibilityOff,
   Shield as ShieldIcon,
+  DirectionsBus as BusIcon,
 } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -66,38 +67,129 @@ export default function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #20146B 0%, #1D64C2 50%, #19D0D8 100%)',
-        p: 2,
+        position: 'relative',
+        overflow: 'hidden',
+        background: '#0F172A',
       }}
     >
-      <Card sx={{ width: '100%', maxWidth: 420, overflow: 'visible' }}>
-        <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
+      {/* Animated gradient background */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 30%, #312E81 50%, #4F46E5 70%, #06B6D4 100%)',
+          backgroundSize: '400% 400%',
+          animation: 'gradientShift 15s ease infinite',
+          '@keyframes gradientShift': {
+            '0%': { backgroundPosition: '0% 50%' },
+            '50%': { backgroundPosition: '100% 50%' },
+            '100%': { backgroundPosition: '0% 50%' },
+          },
+        }}
+      />
+
+      {/* Subtle grid pattern */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0.03,
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+      {/* Floating orbs */}
+      <Box
+        sx={{
+          position: 'absolute',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%)',
+          top: '-100px',
+          right: '-100px',
+          animation: 'float 8s ease-in-out infinite',
+          '@keyframes float': {
+            '0%, 100%': { transform: 'translateY(0px)' },
+            '50%': { transform: 'translateY(30px)' },
+          },
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)',
+          bottom: '-80px',
+          left: '-80px',
+          animation: 'float2 10s ease-in-out infinite',
+          '@keyframes float2': {
+            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+            '50%': { transform: 'translateY(-20px) rotate(10deg)' },
+          },
+        }}
+      />
+
+      <Card
+        sx={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: 440,
+          mx: 2,
+          borderRadius: '24px',
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(40px)',
+          WebkitBackdropFilter: 'blur(40px)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, sm: 4.5 } }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Box
               sx={{
-                width: 64,
-                height: 64,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #20146B 0%, #1D64C2 100%)',
+                width: 72,
+                height: 72,
+                borderRadius: '20px',
+                background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #06B6D4 100%)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                mb: 2,
-                boxShadow: '0 8px 20px rgba(29, 100, 194, 0.3)',
+                mb: 3,
+                boxShadow: '0 8px 32px rgba(79, 70, 229, 0.4)',
               }}
             >
-              <ShieldIcon sx={{ color: 'white', fontSize: 32 }} />
+              <ShieldIcon sx={{ color: 'white', fontSize: 36 }} />
             </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              Super Admin Login
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.02em' }}
+            >
+              Welcome Back
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              CoU Bus Tracker Control Panel
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)', mt: 1 }}>
+              Sign in to access the control panel
             </Typography>
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert
+              severity="error"
+              sx={{
+                mb: 3,
+                borderRadius: '12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.15)',
+                color: '#FCA5A5',
+                '& .MuiAlert-icon': { color: '#EF4444' },
+              }}
+            >
               {error}
             </Alert>
           )}
@@ -105,7 +197,7 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
               fullWidth
-              label="Email"
+              label="Email address"
               type="email"
               autoComplete="username"
               margin="normal"
@@ -115,9 +207,23 @@ export default function Login() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <EmailIcon color="action" />
+                    <EmailIcon sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 20 }} />
                   </InputAdornment>
                 ),
+              }}
+              sx={{
+                mb: 1,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  borderRadius: '12px',
+                  color: '#FFFFFF',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                  '&.Mui-focused fieldset': { borderColor: '#4F46E5' },
+                },
+                '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.35)' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#818CF8' },
+                '& .MuiFormHelperText-root': { color: '#FCA5A5' },
               }}
             />
             <TextField
@@ -132,16 +238,34 @@ export default function Login() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LockIcon color="action" />
+                    <LockIcon sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 20 }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((s) => !s)} edge="end">
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    <IconButton
+                      onClick={() => setShowPassword((s) => !s)}
+                      edge="end"
+                      sx={{ color: 'rgba(255,255,255,0.35)' }}
+                    >
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                     </IconButton>
                   </InputAdornment>
                 ),
+              }}
+              sx={{
+                mb: 1,
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  borderRadius: '12px',
+                  color: '#FFFFFF',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.08)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+                  '&.Mui-focused fieldset': { borderColor: '#4F46E5' },
+                },
+                '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.35)' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#818CF8' },
+                '& .MuiFormHelperText-root': { color: '#FCA5A5' },
               }}
             />
             <Button
@@ -150,7 +274,23 @@ export default function Login() {
               variant="contained"
               size="large"
               disabled={loading}
-              sx={{ mt: 3, py: 1.4, fontSize: 16 }}
+              sx={{
+                mt: 3,
+                py: 1.5,
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                boxShadow: '0 4px 20px rgba(79, 70, 229, 0.4)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #4338CA 0%, #6D28D9 100%)',
+                  boxShadow: '0 6px 24px rgba(79, 70, 229, 0.5)',
+                },
+                '&:disabled': {
+                  background: 'rgba(255,255,255,0.05)',
+                  color: 'rgba(255,255,255,0.3)',
+                },
+              }}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
@@ -158,8 +298,13 @@ export default function Login() {
 
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', mt: 3, textAlign: 'center' }}
+            sx={{
+              display: 'block',
+              mt: 3,
+              textAlign: 'center',
+              color: 'rgba(255,255,255,0.25)',
+              fontSize: '0.7rem',
+            }}
           >
             Authorized personnel only. All actions are logged.
           </Typography>

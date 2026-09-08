@@ -16,12 +16,14 @@ import {
   Switch,
   FormControlLabel,
   Tooltip,
+  Avatar,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   LockReset as LockResetIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -38,9 +40,9 @@ export default function SuperAdmins() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [editing, setEditing] = useState(null);          // super admin being edited
+  const [editing, setEditing] = useState(null);
   const [creating, setCreating] = useState(false);
-  const [resetting, setResetting] = useState(null);      // id of admin whose password to reset
+  const [resetting, setResetting] = useState(null);
   const [deleting, setDeleting] = useState(null);
 
   const load = async () => {
@@ -64,14 +66,22 @@ export default function SuperAdmins() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Super Admin Accounts
+            Super Admins
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage accounts with full system control
+            Manage accounts with full system access
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>
-          Add Super Admin
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setCreating(true)}
+          sx={{
+            borderRadius: '10px',
+            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.3)',
+          }}
+        >
+          Add Admin
         </Button>
       </Stack>
 
@@ -83,16 +93,38 @@ export default function SuperAdmins() {
               sx={{
                 width: '100%',
                 borderCollapse: 'collapse',
-                '& th, & td': { p: 1.5, textAlign: 'left', fontSize: 14 },
-                '& thead th': { fontWeight: 600, color: 'text.secondary', borderBottom: '1px solid', borderColor: 'divider' },
-                '& tbody tr': { borderBottom: '1px solid', borderColor: 'divider' },
-                '& tbody tr:last-child': { borderBottom: 'none' },
+                '& th': {
+                  px: 2.5,
+                  py: 2,
+                  textAlign: 'left',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: '#94A3B8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  borderBottom: '1px solid rgba(0,0,0,0.04)',
+                  backgroundColor: 'rgba(0,0,0,0.01)',
+                },
+                '& td': {
+                  px: 2.5,
+                  py: 2,
+                  fontSize: '0.85rem',
+                  borderBottom: '1px solid rgba(0,0,0,0.03)',
+                },
+                '& tbody tr': {
+                  transition: 'background-color 0.15s ease',
+                  '&:hover': {
+                    backgroundColor: 'rgba(79, 70, 229, 0.02)',
+                  },
+                },
+                '& tbody tr:last-child td': {
+                  borderBottom: 'none',
+                },
               }}
             >
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Name</th>
+                  <th>Admin</th>
                   <th>Email</th>
                   <th>Status</th>
                   <th>Created</th>
@@ -102,27 +134,79 @@ export default function SuperAdmins() {
               <tbody>
                 {admins.map((a) => (
                   <tr key={a.id}>
-                    <td>{a.id}</td>
-                    <td>{a.fullName}</td>
-                    <td>{a.email}</td>
+                    <td>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Avatar
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            background: a.isActive
+                              ? 'linear-gradient(135deg, #4F46E5, #7C3AED)'
+                              : 'linear-gradient(135deg, #94A3B8, #64748B)',
+                          }}
+                        >
+                          {a.fullName
+                            ? a.fullName.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase()
+                            : 'SA'}
+                        </Avatar>
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                          {a.fullName}
+                        </Typography>
+                      </Box>
+                    </td>
+                    <td>
+                      <Typography sx={{ fontFamily: "'SF Mono', monospace", fontSize: '0.8rem', color: '#64748B' }}>
+                        {a.email}
+                      </Typography>
+                    </td>
                     <td>
                       <Chip
                         label={a.isActive ? 'Active' : 'Disabled'}
                         size="small"
                         color={a.isActive ? 'success' : 'default'}
                         variant={a.isActive ? 'filled' : 'outlined'}
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.7rem',
+                          height: 26,
+                          borderRadius: '8px',
+                          ...(a.isActive && {
+                            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                            color: '#059669',
+                          }),
+                        }}
                       />
                     </td>
-                    <td>{a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'}</td>
+                    <td>
+                      <Typography variant="body2" sx={{ color: '#64748B', fontSize: '0.8rem' }}>
+                        {a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                      </Typography>
+                    </td>
                     <td align="right">
                       <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                        <Tooltip title="Edit">
-                          <IconButton size="small" onClick={() => setEditing(a)}>
+                        <Tooltip title="Edit" arrow>
+                          <IconButton
+                            size="small"
+                            onClick={() => setEditing(a)}
+                            sx={{
+                              color: '#64748B',
+                              '&:hover': { color: '#4F46E5', backgroundColor: 'rgba(79, 70, 229, 0.06)' },
+                            }}
+                          >
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Reset password">
-                          <IconButton size="small" onClick={() => setResetting(a)}>
+                        <Tooltip title="Reset password" arrow>
+                          <IconButton
+                            size="small"
+                            onClick={() => setResetting(a)}
+                            sx={{
+                              color: '#64748B',
+                              '&:hover': { color: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.06)' },
+                            }}
+                          >
                             <LockResetIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
@@ -132,6 +216,7 @@ export default function SuperAdmins() {
                               ? 'You cannot delete your own account'
                               : 'Delete'
                           }
+                          arrow
                         >
                           <span>
                             <IconButton
@@ -139,6 +224,9 @@ export default function SuperAdmins() {
                               color="error"
                               disabled={currentAdmin?.id === a.id}
                               onClick={() => setDeleting(a)}
+                              sx={{
+                                '&:hover': { backgroundColor: 'rgba(239, 68, 68, 0.06)' },
+                              }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -177,6 +265,41 @@ export default function SuperAdmins() {
   );
 }
 
+function DialogShell({ open, onClose, title, children, onSubmit, isSubmitting, submitLabel }) {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle
+        sx={{
+          fontWeight: 700,
+          fontSize: '1.1rem',
+          borderBottom: '1px solid rgba(0,0,0,0.04)',
+          py: 2.5,
+        }}
+      >
+        {title}
+      </DialogTitle>
+      <form onSubmit={onSubmit}>
+        <DialogContent sx={{ pt: '20px !important' }}>
+          {children}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button onClick={onClose} sx={{ color: '#64748B' }}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            sx={{ minWidth: 100 }}
+          >
+            {isSubmitting ? 'Saving...' : submitLabel}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+}
+
 function CreateDialog({ open, onClose, onSuccess }) {
   const {
     register,
@@ -201,25 +324,14 @@ function CreateDialog({ open, onClose, onSuccess }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add Super Admin</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <Stack spacing={2}>
-            <TextField label="Full name" fullWidth {...register('fullName')} error={!!errors.fullName} helperText={errors.fullName?.message} />
-            <TextField label="Email" type="email" fullWidth {...register('email')} error={!!errors.email} helperText={errors.email?.message} />
-            <TextField label="Password" type="password" fullWidth {...register('password')} error={!!errors.password} helperText={errors.password?.message} />
-            <FormControlLabel control={<Switch defaultChecked {...register('isActive')} />} label="Active" />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create'}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+    <DialogShell open={open} onClose={onClose} title="Add Super Admin" onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} submitLabel="Create">
+      <Stack spacing={2.5}>
+        <TextField label="Full name" fullWidth {...register('fullName')} error={!!errors.fullName} helperText={errors.fullName?.message} />
+        <TextField label="Email" type="email" fullWidth {...register('email')} error={!!errors.email} helperText={errors.email?.message} />
+        <TextField label="Password" type="password" fullWidth {...register('password')} error={!!errors.password} helperText={errors.password?.message} />
+        <FormControlLabel control={<Switch defaultChecked {...register('isActive')} />} label="Active" />
+      </Stack>
+    </DialogShell>
   );
 }
 
@@ -252,24 +364,13 @@ function EditDialog({ admin, onClose, onSuccess }) {
   };
 
   return (
-    <Dialog open={!!admin} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit Super Admin</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <Stack spacing={2}>
-            <TextField label="Email" value={admin?.email || ''} disabled fullWidth />
-            <TextField label="Full name" fullWidth {...register('fullName')} error={!!errors.fullName} helperText={errors.fullName?.message} />
-            <FormControlLabel control={<Switch {...register('isActive')} />} label="Active" />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save'}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+    <DialogShell open={!!admin} onClose={onClose} title="Edit Super Admin" onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} submitLabel="Save Changes">
+      <Stack spacing={2.5}>
+        <TextField label="Email" value={admin?.email || ''} disabled fullWidth />
+        <TextField label="Full name" fullWidth {...register('fullName')} error={!!errors.fullName} helperText={errors.fullName?.message} />
+        <FormControlLabel control={<Switch {...register('isActive')} />} label="Active" />
+      </Stack>
+    </DialogShell>
   );
 }
 
@@ -294,27 +395,16 @@ function ResetPasswordDialog({ admin, onClose, onSuccess }) {
   };
 
   return (
-    <Dialog open={!!admin} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Reset password for {admin?.fullName}</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <TextField
-            label="New password"
-            type="password"
-            fullWidth
-            autoFocus
-            {...register('newPassword', { required: 'Required', minLength: { value: 8, message: 'Min 8 characters' } })}
-            error={!!errors.newPassword}
-            helperText={errors.newPassword?.message}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" color="warning" disabled={isSubmitting}>
-            {isSubmitting ? 'Resetting...' : 'Reset'}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+    <DialogShell open={!!admin} onClose={onClose} title={`Reset password for ${admin?.fullName}`} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} submitLabel="Reset">
+      <TextField
+        label="New password"
+        type="password"
+        fullWidth
+        autoFocus
+        {...register('newPassword', { required: 'Required', minLength: { value: 8, message: 'Min 8 characters' } })}
+        error={!!errors.newPassword}
+        helperText={errors.newPassword?.message}
+      />
+    </DialogShell>
   );
 }
