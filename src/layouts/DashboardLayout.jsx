@@ -31,15 +31,12 @@ export default function DashboardLayout() {
         <Toolbar sx={{ minHeight: { xs: 64, sm: 68 } }} />
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            px: { xs: 2.5, md: 3.5 },
+            width: '100%',
+            px: { xs: 2, md: 3 },
             py: { xs: 2, md: 2.5 },
           }}
         >
-          <Box sx={{ width: '100%', maxWidth: 1400 }}>
-            <Outlet />
-          </Box>
+          <Outlet />
         </Box>
       </Box>
     </Box>

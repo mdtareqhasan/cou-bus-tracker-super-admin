@@ -143,7 +143,7 @@ export default function Dashboard() {
   return (
     <Box>
       <Grid container spacing={2.5}>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={<GroupIcon />}
             label="Total Super Admins"
@@ -152,7 +152,7 @@ export default function Dashboard() {
             gradientIndex={0}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={<PhoneAndroidIcon />}
             label="Latest App Version"
@@ -161,7 +161,7 @@ export default function Dashboard() {
             gradientIndex={2}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={<CampaignIcon />}
             label="Maintenance Mode"
@@ -170,7 +170,7 @@ export default function Dashboard() {
             gradientIndex={3}
           />
         </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={<SpeedIcon />}
             label="Force Update"
