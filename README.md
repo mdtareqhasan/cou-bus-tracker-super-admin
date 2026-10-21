@@ -184,7 +184,7 @@ server {
     listen 80;
     server_name superadmin.kubijatra.com;
 
-    root /var/www/super-admin-panel;
+    root /var/www/super-admin;
     index index.html;
 
     # Client-side routes (/dashboard, /server-config, ...)
@@ -212,8 +212,8 @@ Deploy steps:
 
 ```bash
 npm run build
-sudo mkdir -p /var/www/super-admin-panel
-sudo cp -a dist/. /var/www/super-admin-panel/
+sudo mkdir -p /var/www/super-admin
+sudo cp -a dist/. /var/www/super-admin/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
