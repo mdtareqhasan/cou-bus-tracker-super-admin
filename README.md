@@ -18,6 +18,17 @@ No default admin or super admin account is seeded. The backend creates no
 credentials on startup, so the first account must be provisioned explicitly
 before the panel can be used.
 
+Run the account helper from the API container (see the API README for
+details):
+
+```bash
+docker exec cou-bus-tracker-app account-cli \
+  --create-super-admin \
+  --email=superadmin@cou.ac.bd \
+  --password='ChangeMe-123' \
+  --name='COU Super Admin'
+```
+
 ## Tech Stack
 
 | | |
