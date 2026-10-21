@@ -1,7 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+// Default to a same-origin relative path, exactly like the main admin panel.
+// In dev, Vite proxies /api to VITE_API_PROXY_TARGET (see vite.config.js).
+// In production, the panel is served by the same host that proxies /api to
+// the backend (Nginx, or the rewrite in vercel.json), so no absolute URL —
+// and no CORS — is needed. Set VITE_API_BASE_URL only for split deployments.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

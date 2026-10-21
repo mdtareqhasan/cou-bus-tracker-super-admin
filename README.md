@@ -2,8 +2,6 @@
 
 Standalone React + Material-UI panel that controls the CoU Bus Tracker backend and the Flutter mobile app.
 
-**Live:** [cou-bus-tracker-super-admin.vercel.app](https://cou-bus-tracker-super-admin.vercel.app)
-
 ## Features
 
 1. **Super Admin Authentication** — JWT-based login (`POST /api/super-admin/auth/login`)
@@ -41,8 +39,7 @@ Standalone React + Material-UI panel that controls the CoU Bus Tracker backend a
 ## Project Structure
 
 ```
-super_admin/
-├── api/                          # Vercel serverless functions
+cou-bus-tracker-super-admin/
 ├── public/                       # Static assets
 ├── src/
 │   ├── api/axios.js              # Axios instance + auth interceptor
@@ -62,8 +59,9 @@ super_admin/
 │   │   └── BroadcastNotice.jsx   # Send push notifications
 │   ├── theme.js                  # MUI theme (glassmorphism palette)
 │   └── utils/validationSchemas.js  # Yup schemas for forms
-├── vercel.json                   # SPA rewrite rules
-├── .env                          # Environment variables
+├── vite.config.js                # Dev server + /api and /uploads proxy
+├── .env.docker-backend           # `npm run dev` proxy target (port 8081)
+├── .env.local-backend            # `npm run dev:local` proxy target (port 8080)
 └── package.json
 ```
 
@@ -71,22 +69,33 @@ super_admin/
 
 ### 1. Backend must be running
 
+Either run the Spring Boot API directly:
+
 ```bash
-cd Backend
+cd cou-bus-tracker-api
 mvn spring-boot:run
 ```
 
-Backend listens on `http://localhost:8080`. Flyway runs `V16__create_super_admins_and_app_config.sql` on first launch.
+Backend listens on `http://localhost:8080`.
+
+Or use the Docker setup, which keeps the container on 8080 but publishes it
+on **8081** (host 8080 is needed by another local service):
+
+```bash
+cd cou-bus-tracker-api
+docker compose up -d --build app   # -> http://localhost:8081
+```
 
 ### 2. Install and run the panel
 
 ```bash
-cd super_admin
 npm install
-npm run dev
+npm run dev        # Docker backend  -> /api proxied to http://localhost:8081
+npm run dev:local  # mvn backend     -> /api proxied to http://localhost:8080
 ```
 
-Opens on **http://localhost:5174**.
+Opens on **http://localhost:5174**. The browser calls the relative path `/api`,
+and Vite forwards it to the target above — same-origin, so no CORS.
 
 ### 3. Production build
 
@@ -94,17 +103,35 @@ Opens on **http://localhost:5174**.
 npm run build    # outputs to dist/
 ```
 
-Deploy `dist/` to Vercel (or any static host).
+Deploy `dist/` behind Nginx on the API's VPS (see [Deployment](#deployment)).
 
 ## Environment Variables
 
-`.env`:
+The API base URL defaults to the relative path **`/api`**, exactly like the main
+admin panel. The panel therefore works on any host without knowing the backend's
+public URL, as long as that host forwards `/api` to the backend.
 
-```
-VITE_API_BASE_URL=http://localhost:8080/api
-```
+Resolution order for `src/api/axios.js`:
 
-For production, change to your deployed backend URL.
+1. `VITE_API_BASE_URL` — only needed for split deployments (panel and API on
+   different public origins).
+2. Fallback: `/api` (same origin).
+
+Resolution order for the dev-server proxy target (`vite.config.js`):
+
+1. `VITE_API_PROXY_TARGET` from the active mode's env file
+   (`.env.docker-backend` or `.env.local-backend`).
+2. `.env.local` (gitignored, always loaded).
+3. Default: `http://localhost:8081`.
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `VITE_API_BASE_URL` | Override the API base URL at build time | `/api` |
+| `VITE_API_PROXY_TARGET` | Dev/preview proxy target (backend origin) | `http://localhost:8081` |
+
+`npm run dev` loads `.env.docker-backend` (Docker backend on 8081);
+`npm run dev:local` loads `.env.local-backend` (`mvn spring-boot:run` on 8080).
+Use `.env.local` to override either without touching tracked files.
 
 ## Pages
 
@@ -142,20 +169,64 @@ For production, change to your deployed backend URL.
 
 ## Deployment
 
-### Vercel (recommended)
+Build once with `npm run build`; the output in `dist/` is a static SPA and does
+**not** contain any backend URL. Whatever serves it only has to forward `/api`
+to the API.
 
-1. Push `super_admin/` to a Git repository
-2. Import in Vercel dashboard
-3. Set `VITE_API_BASE_URL` in Vercel environment variables (Settings → Environment Variables)
-4. Deploy — `vercel.json` handles SPA rewrites automatically
+### Nginx on the API's VPS
+
+This is the same pattern as the main admin panel: Nginx serves the static files
+and proxies `/api` to Spring Boot, so the browser only ever talks to one origin
+(no CORS, no build-time URL).
+
+```nginx
+server {
+    listen 80;
+    server_name superadmin.kubijatra.com;
+
+    root /var/www/cou-super-admin/dist;
+    index index.html;
+
+    # Client-side routes (/dashboard, /server-config, ...)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API -> Spring Boot on the same machine
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080;   # keep /api/... in the forwarded path
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /uploads/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+    }
+}
+```
+
+Deploy steps:
+
+```bash
+npm run build
+sudo mkdir -p /var/www/cou-super-admin
+sudo rsync -a --delete dist/ /var/www/cou-super-admin/dist/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Then add HTTPS with `certbot --nginx -d superadmin.kubijatra.com`.
 
 ### CORS
 
-Backend's `SecurityConfig` and `WebMvcConfig` already permit:
-- `http://localhost:5174` (local dev)
-- `https://cou-bus-tracker-super-admin.vercel.app` (production)
-
-Add new origins in `WebMvcConfig.allowedOrigins` if deploying elsewhere.
+Because Nginx serves both the panel and `/api` on the same origin, there is
+**no cross-origin request at all**, so CORS does not apply. Only set
+`VITE_API_BASE_URL` to a different origin when the panel and API are served
+separately — in that case the backend must allow the panel's origin via
+`WebMvcConfig.allowedOrigins` (it already permits `http://localhost:5174` for
+local dev).
 
 ## Security Notes
 

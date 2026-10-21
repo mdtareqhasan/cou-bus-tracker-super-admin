@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5174",
+    "dev": "vite --mode docker-backend --port 5174",
+    "dev:local": "vite --mode local-backend --port 5174",
+    "dev:docker": "vite --mode docker-backend --port 5174",
     "build": "vite build",
     "preview": "vite preview --port 5174"
   },

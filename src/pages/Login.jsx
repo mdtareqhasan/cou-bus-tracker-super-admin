@@ -52,10 +52,22 @@ export default function Login() {
       toast.success('Welcome back!');
       navigate('/dashboard');
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        'Login failed. Check your credentials.';
+      // A dead backend / CORS rejection has no `response` at all. Reporting
+      // that as "check your credentials" sends people hunting for a password
+      // problem when the API simply isn't reachable.
+      let msg;
+      if (err.response) {
+        msg =
+          err.response.data?.message ||
+          err.response.data?.error ||
+          `Login failed (HTTP ${err.response.status}).`;
+      } else {
+        const url = `${err.config?.baseURL || ''}${err.config?.url || ''}`;
+        msg =
+          `Cannot reach the API at ${url || 'the configured URL'} — ` +
+          'no response was received. Is the backend running on that port? ' +
+          '(The local Docker setup exposes it on 8081, not 8080.)';
+      }
       setError(msg);
     }
   };
