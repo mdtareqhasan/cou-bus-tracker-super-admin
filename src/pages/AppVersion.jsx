@@ -36,7 +36,8 @@ export default function AppVersion() {
       latestAppVersion: '',
       minimumAppVersion: '',
       forceUpdate: false,
-      updateAvailableMessage: '',
+      updateMessageBn: '',
+      updateMessageEn: '',
     },
   });
 
@@ -49,7 +50,8 @@ export default function AppVersion() {
         latestAppVersion: m.latest_app_version || '',
         minimumAppVersion: m.minimum_app_version || '',
         forceUpdate: m.force_update === 'true',
-        updateAvailableMessage: m.update_available_message || '',
+        updateMessageBn: m.update_available_message_bn ?? m.update_available_message ?? '',
+        updateMessageEn: m.update_available_message_en || '',
       });
     });
   }, [reset]);
@@ -57,13 +59,19 @@ export default function AppVersion() {
   const forceUpdate = watch('forceUpdate');
 
   const onSubmit = async (values) => {
+    const bangla = values.updateMessageBn?.trim() ?? '';
+    const english = values.updateMessageEn?.trim() ?? '';
     try {
       await api.put('/super-admin/config', {
         values: {
           latest_app_version: values.latestAppVersion,
           minimum_app_version: values.minimumAppVersion,
           force_update: String(values.forceUpdate),
-          update_available_message: values.updateAvailableMessage,
+          // Old clients (pre-localization) only read this key, so keep it in
+          // Bangla to preserve their current behaviour.
+          update_available_message: bangla,
+          update_available_message_bn: bangla,
+          update_available_message_en: english,
         },
       });
       toast.success('App version settings saved');
@@ -171,16 +179,28 @@ export default function AppVersion() {
                 </Stack>
               </Box>
 
-              <TextField
-                label="Update message (Bengali)"
-                fullWidth
-                multiline
-                minRows={3}
-                size="small"
-                {...register('updateAvailableMessage')}
-                error={!!errors.updateAvailableMessage}
-                helperText={errors.updateAvailableMessage?.message || 'Shown to users when an update is available'}
-              />
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+                <TextField
+                  label="Update message (Bangla)"
+                  fullWidth
+                  multiline
+                  minRows={3}
+                  size="small"
+                  {...register('updateMessageBn')}
+                  error={!!errors.updateMessageBn}
+                  helperText={errors.updateMessageBn?.message || 'Shown when the app is set to Bangla'}
+                />
+                <TextField
+                  label="Update message (English)"
+                  fullWidth
+                  multiline
+                  minRows={3}
+                  size="small"
+                  {...register('updateMessageEn')}
+                  error={!!errors.updateMessageEn}
+                  helperText={errors.updateMessageEn?.message || 'Shown when the app is set to English. Falls back to Bangla if empty.'}
+                />
+              </Stack>
 
               {Object.keys(errors).length > 0 && (
                 <Alert

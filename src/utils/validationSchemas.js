@@ -45,7 +45,10 @@ export const appVersionSchema = yup.object({
     .matches(/^\d+\.\d+\.\d+$/, 'Must be semantic version (e.g., 1.0.0)')
     .required('Required'),
   forceUpdate: yup.boolean(),
-  updateAvailableMessage: yup.string().trim().required('Message is required'),
+  // Both optional: an empty box falls back to the other language, then to the
+  // app's own translated default, so the admin is never forced to write both.
+  updateMessageBn: yup.string().trim(),
+  updateMessageEn: yup.string().trim(),
 });
 
 export const broadcastNoticeSchema = yup.object({
