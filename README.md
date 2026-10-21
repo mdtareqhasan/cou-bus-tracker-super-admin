@@ -12,16 +12,11 @@ Standalone React + Material-UI panel that controls the CoU Bus Tracker backend a
 6. **Notice Broadcasting** — Send push notifications to all Flutter app users
 7. **Modern UI** — Glassmorphism design with MUI 5, animated sidebar, responsive layout
 
-## Default Credentials
+## Accounts
 
-| Field | Value |
-|---|---|
-| Email | `superadmincou@gmail.com` |
-| Password | `Admin@123` |
-
-> The default account is created at backend startup by `SuperAdminDataInitializer` (BCrypt hash generated at runtime, guaranteed to verify).
-
-> **Change this password before any public deployment.**
+No default admin or super admin account is seeded. The backend creates no
+credentials on startup, so the first account must be provisioned explicitly
+before the panel can be used.
 
 ## Tech Stack
 
