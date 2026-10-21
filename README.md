@@ -184,7 +184,7 @@ server {
     listen 80;
     server_name superadmin.kubijatra.com;
 
-    root /var/www/cou-super-admin/dist;
+    root /var/www/super-admin-panel;
     index index.html;
 
     # Client-side routes (/dashboard, /server-config, ...)
@@ -212,12 +212,28 @@ Deploy steps:
 
 ```bash
 npm run build
-sudo mkdir -p /var/www/cou-super-admin
-sudo rsync -a --delete dist/ /var/www/cou-super-admin/dist/
+sudo mkdir -p /var/www/super-admin-panel
+sudo cp -a dist/. /var/www/super-admin-panel/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
 Then add HTTPS with `certbot --nginx -d superadmin.kubijatra.com`.
+
+> **Do not set `VITE_API_BASE_URL` when deploying behind Nginx.** Vite bakes it
+> into the bundle at build time, which turns every call back into a cross-origin
+> request (and a `403` unless the backend allows that origin). Keep the relative
+> `/api` default — Nginx already forwards it. A leftover `.env` /
+> `.env.production` / exported shell variable is enough to break it, so verify
+> before copying:
+>
+> ```bash
+> grep -rn VITE_API_BASE_URL .env* 2>/dev/null   # expected: no output
+> npm run build
+> grep -l "api.kubijatra.com" dist/assets/*.js   # expected: no output
+> ```
+>
+> If something still forces the absolute URL, build with an explicit override:
+> `VITE_API_BASE_URL=/api npm run build` (process env wins over `.env` files).
 
 ### CORS
 
